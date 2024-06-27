@@ -1,14 +1,15 @@
 개발 환경 설치 목록
-  우분투 22버전
-  node 설치
-  Mongodb 설치
-  Let's Encrypt를 통해서 인증서 발급
+<br>　우분투 22버전
+<br>　node 설치
+<br>　Mongodb 설치
+<br>　Let's Encrypt를 통해서 인증서 발급
 
 Nginx를 리버스 프록시 서버로 두고 
-  Let's Encrypt를 적용해야 코드가 https가 적용되어 돌아간다
+<br>　Let's Encrypt를 적용해야 코드가 https가 적용되어 돌아간다
 
-
+<br>
 코드 파일 설명
+<br>
     
     nginx.conf - 리버스 프록시 서버 설정 파일
 
