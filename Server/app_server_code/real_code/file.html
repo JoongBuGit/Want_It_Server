@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>파일 업로드</title>
+</head>
+<body>
+  <h1>파일 업로드</h1>
+  <form action="/upload_js" method="post" enctype="multipart/form-data">
+    <label for="myfile">업로드할 파일:</label>
+    <input type="file" id="myfile" name="myfile" multiple>
+    <br>
+    <button type="submit">업로드</button>
+  </form>
+</body>
+</html>

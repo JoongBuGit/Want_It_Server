@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Socket.IO chat</title>
+    <style>
+      body {
+	margin: 0; 
+	padding-bottom: 3rem; 
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+	Helvetica, Arial, sans-serif; 
+      }
+
+      #form {
+	background: rgba(0, 0, 0, 0.15); 
+	padding: 0.25rem; 
+	position: fixed; 
+	bottom: 0; 
+	left: 0; 
+	right: 0; 
+	display: flex; 
+	height: 3rem; 
+	box-sizing: border-box; 
+	backdrop-filter: blur(10px); 
+      }
+      #input { 
+	border: none; 
+	padding: 0 1rem;
+	flex-grow: 1; 
+	border-radius: 2rem; 
+	margin: 0.25rem; 
+      }
+      #input:focus { 
+	      outline: none; 
+      }
+      #form > button { 
+	background: #333; 
+	border: none; 
+	padding: 0 1rem; 
+	margin: 0.25rem; 
+	border-radius: 3px; 
+	outline: none; color: #fff; 
+      }
+
+      #messages { 
+	      list-style-type: none; 
+	      margin: 0; 
+	      padding: 0; 
+      }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { 
+	      background: none; 
+      }
+      .message-left {
+        justify-content: flex-start; /* 왼쪽 정렬 */
+      }
+      .message-right {
+        justify-content: flex-end; /* 오른쪽 정렬 */
+      }
+      .message-left span,
+      .message-right span {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        max-width: 60%;
+      }
+      .message-left span {
+        background: #d1e7dd; /* 상대방 메시지 배경 색상 */
+      }
+      .message-right span {
+        background: #0d6efd; /* 내 메시지 배경 색상 */
+        color: #fff; /* 내 메시지 글자 색상 */
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" />
+      <button>Send</button>
+    </form>
+
+        <!-- 클라이언트 소켓을 만들기 위한 코드 요청-->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+          // 클라이언트 소켓 만들기
+	//	const socket = io({path : "/chat"});
+               const socket = io();
+
+
+	  // DOM document 객체를 이용하여 자바스크립트로 html요소에 접근하기 
+          const form = document.getElementById('form');         //
+          const input = document.getElementById('input');
+          const message = document.getElementById('message');   //
+
+          // form에 이벤트 리스너 만들기 
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // 채팅 메세지가 있을 때만 서버로 보내기
+            if (input.value) {
+              socket.emit('chat message', input.value);
+                   
+              // 채팅 후 메세지 창 초기화 하기      
+              input.value = '';
+            }
+          });
+
+           // 서버에서 'chat message'테그  메세지 받기 
+           socket.on('chat message', (msg) => {
+            const item = document.createElement('li');  // <li>테그 만들기
+            item.textContent = msg;                     // <li>테크에 받은 텍스트 넣기  
+            messages.appendChild(item);                 // id = 'message' ul테그에 만든 li>테그 추가하
+            window.scrollTo(0, document.body.scrollHeight);
+          });
+
+
+        </script>
+</body>
+</html>

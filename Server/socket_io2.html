@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Socket.IO chat</title>
+    <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages > li {
+        padding: 0.5rem 1rem;
+        display: flex; /* 메시지를 가로로 정렬하기 위해 flex 사용 */
+      }
+      #messages > li:nth-child(odd) {
+        background: none;
+      }
+      .message-left {
+        justify-content: flex-start; /* 왼쪽 정렬 */
+      }
+      .message-right {
+        justify-content: flex-end; /* 오른쪽 정렬 */
+      }
+      .message-left span,
+      .message-right span {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        max-width: 60%;
+      }
+      .message-left span {
+        background: #d1e7dd; /* 상대방 메시지 배경 색상 */
+      }
+      .message-right span {
+        background: #0d6efd; /* 내 메시지 배경 색상 */
+        color: #fff; /* 내 메시지 글자 색상 */
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <!-- 메시지를 담을 ul 태그 -->
+    <form id="form" action="">
+      <input id="input" autocomplete="off" />
+      <!-- 채팅 입력 필드 -->
+      <button>Send</button>
+      <!-- 전송 버튼 -->
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const form = document.getElementById('form');
+      const input = document.getElementById('input');
+      const messages = document.getElementById('messages');
+
+      // 클라이언트 식별을 위한 유니크한 ID 생성
+      const clientId = Math.random().toString(36).substring(2, 15);
+
+      // form에 이벤트 리스너 만들기
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        if (input.value) {
+          // 입력 필드에 값이 있을 때만
+          const msg = { id: clientId, text: input.value };
+          addMessage(msg, 'right'); // 내 메시지를 오른쪽에 추가
+          socket.emit('chat message', msg); // 서버로 메시지 전송
+          input.value = ''; // 입력 필드 초기화
+        }
+      });
+
+      // 서버로부터 'chat message' 이벤트를 받을 때
+      socket.on('chat message', (msg) => {
+        // 새로운 메시지가 도착할 때마다 호출되는 함수
+        const side = msg.id === clientId ? 'right' : 'left';
+        addMessage(msg, side); // 메시지를 해당 방향에 추가
+      });
+
+      // 메시지를 추가하는 함수
+      function addMessage(msg, side) {
+        // 이미 존재하는 메시지인지 확인
+        const existingMessage = Array.from(messages.children).find((child) => {
+          const messageText = child.querySelector('span').textContent;
+          const messageSide = child.className.includes('message-left')
+            ? 'left'
+            : 'right';
+          return messageText === msg.text && messageSide === side;
+        });
+
+        if (existingMessage) {
+          return; // 이미 있는 메시지면 추가하지 않음
+        }
+
+        const item = document.createElement('li'); // li 태그 생성
+        item.className = side === 'left' ? 'message-left' : 'message-right'; // 메시지가 왼쪽인지 오른쪽인지에 따라 클래스 설정
+        const span = document.createElement('span'); // span 태그 생성
+        span.textContent = msg.text; // 메시지 내용 설정
+        item.appendChild(span); // li 태그에 span 태그 추가
+        messages.appendChild(item); // ul 태그에 li 태그 추가
+        window.scrollTo(0, document.body.scrollHeight); // 화면을 아래로 스크롤
+      }
+    </script>
+  </body>
+</html>
