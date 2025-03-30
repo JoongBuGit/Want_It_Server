@@ -1,0 +1,7 @@
+# letsencrypt의 README만 남기고 생략하기 
+letsencrypt/*
+!letsencrypt/README.md
+
+# data/mongodb/README.md만 남기고 생략하기
+data/*
+!data/mongodb/README.md
